@@ -1,0 +1,21 @@
+{
+  "name": "webcuahangdienthoai",
+  "version": "1.0.0",
+  "description": "Ứng dụng MongoDB Atlas xây dựng trang web quản lý cửa hàng điện thoại",
+  "license": "ISC",
+  "author": "Phan Bảo Khang, Nguyễn Phạm Đăng Dương",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "ejs": "^5.0.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "mongoose": "^9.4.1",
+    "multer": "^2.1.1",
+    "nodemon": "^3.1.14"
+  }
+}

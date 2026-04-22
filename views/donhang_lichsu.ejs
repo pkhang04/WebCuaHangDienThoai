@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-light">
+
+    <!-- Navbar Section -->
+    <%- include('navbar') %>
+
+    <!-- Notification -->
+    <div class="container mt-3">
+        <%- message %>
+    </div>
+
+    <div class="container main-content mt-4 mb-5">
+        <h2 class="fw-bold mb-4 border-start border-4 border-primary ps-3">Đơn hàng của tôi</h2>
+
+        <% if (donhangs && donhangs.length > 0) { %>
+            <div class="row row-cols-1 g-4">
+                <% donhangs.forEach(dh => { %>
+                    <div class="col">
+                        <div class="card shadow-sm border-0 root-card">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                                <div>
+                                    <span class="text-muted small">Mã đơn: <strong>#<%= dh._id.toString().substring(18).toUpperCase() %></strong></span>
+                                    <span class="text-muted ms-3 small"><i class="bi bi-clock me-1"></i><%= dh.NgayDat.toLocaleDateString('vi-VN', {hour: '2-digit', minute:'2-digit'}) %></span>
+                                </div>
+                                <div>
+                                    <% if (dh.TrangThai === 'Chờ xác nhận') { %>
+                                        <span class="badge bg-warning text-dark px-3 py-2"><i class="bi bi-hourglass-split me-1"></i>Chờ xác nhận</span>
+                                    <% } else if (dh.TrangThai === 'Đã xác nhận') { %>
+                                        <span class="badge bg-info text-dark px-3 py-2"><i class="bi bi-patch-check me-1"></i>Đã xác nhận</span>
+                                    <% } else if (dh.TrangThai === 'Đang giao') { %>
+                                        <span class="badge bg-primary px-3 py-2"><i class="bi bi-truck me-1"></i>Đang giao hàng</span>
+                                    <% } else if (dh.TrangThai === 'Đã giao') { %>
+                                        <span class="badge bg-success px-3 py-2"><i class="bi bi-check-circle me-1"></i>Giao thành công</span>
+                                    <% } else { %>
+                                        <span class="badge bg-danger px-3 py-2"><i class="bi bi-x-circle me-1"></i>Đã hủy</span>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <ul class="list-group list-group-flush">
+                                    <% dh.ChiTiet.forEach(item => { %>
+                                        <li class="list-group-item p-3 border-0 border-bottom">
+                                            <div class="d-flex w-100 align-items-center">
+                                                <div class="flex-shrink-0" style="width: 60px; height: 60px;">
+                                                    <% if (item.DienThoai && item.DienThoai.HinhAnh) { %>
+                                                        <img src="<%= item.DienThoai.HinhAnh.startsWith('http') || item.DienThoai.HinhAnh.startsWith('/') ? item.DienThoai.HinhAnh : '/images/products/' + item.DienThoai.HinhAnh %>" class="img-fluid rounded h-100 object-fit-contain" alt="">
+                                                    <% } else { %>
+                                                        <img src="/images/icons/product.jpg" class="img-fluid rounded h-100 object-fit-contain">
+                                                    <% } %>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h6 class="fw-bold mb-1"><%= item.DienThoai ? item.DienThoai.TenDT : 'Sản phẩm không còn tồn tại' %></h6>
+                                                    <small class="text-muted d-block">Đơn giá: <%= item.DonGia.toLocaleString('vi-VN') %>đ</small>
+                                                </div>
+                                                <div class="text-end" style="min-width: 100px;">
+                                                    <span class="text-muted">x <%= item.SoLuong %></span>
+                                                    <div class="fw-bold text-dark mt-1"><%= (item.DonGia * item.SoLuong).toLocaleString('vi-VN') %>đ</div>
+                                                    <% if (dh.TrangThai === 'Đã giao') { %>
+                                                        <button class="btn btn-sm btn-outline-warning mt-2 d-block ms-auto" 
+                                                                onclick="openReviewModal('<%= dh._id %>', '<%= item.DienThoai._id %>', '<%= item.DienThoai.TenDT %>')">
+                                                            <i class="bi bi-star-fill me-1"></i>Đánh giá
+                                                        </button>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    <% }) %>
+                                </ul>
+                            </div>
+                            <div class="card-footer bg-light p-3 d-flex justify-content-between align-items-center">
+                                <div class="text-start">
+                                    <span class="text-muted small d-block mb-1">Người nhận: <strong><%= dh.TenNguoiNhan %> | <%= dh.DienThoai %></strong></span>
+                                    <span class="text-muted small d-block">Địa chỉ: <strong><%= dh.DiaChi %></strong></span>
+                                </div>
+                                <div class="text-end">
+                                    <div class="mb-2">
+                                        <span class="text-muted me-2">Tổng tiền:</span>
+                                        <span class="fw-bold fs-5 text-danger"><%= dh.TongTien.toLocaleString('vi-VN') %>₫</span>
+                                    </div>
+                                    <% if (dh.TrangThai === 'Chờ xác nhận') { %>
+                                        <a href="/donhang/huy/<%= dh._id %>" 
+                                           class="btn btn-sm btn-outline-danger px-3" 
+                                           onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
+                                            <i class="bi bi-x-circle me-1"></i>Hủy đơn
+                                        </a>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="text-center py-5 bg-white rounded-3 shadow-sm">
+                <i class="bi bi-box-seam fs-1 text-muted opacity-25 d-block mb-3"></i>
+                <h4 class="text-muted mb-4">Bạn chưa có đơn đặt hàng nào trong lịch sử!</h4>
+                <a href="/" class="btn btn-primary px-4 py-2 rounded-pill fw-semibold"><i class="bi bi-arrow-left me-2"></i>Mở xem sản phẩm</a>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <form action="/danhgia/them" method="POST">
+                    <input type="hidden" name="MaDonHang" id="modalMaDonHang">
+                    <input type="hidden" name="MaDienThoai" id="modalMaDienThoai">
+                    <div class="modal-header bg-warning text-dark border-0">
+                        <h5 class="modal-title fw-bold"><i class="bi bi-star-fill me-2"></i>Đánh giá sản phẩm</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <p class="text-muted mb-3">Bạn đang đánh giá cho sản phẩm: <strong id="modalTenDT" class="text-dark"></strong></p>
+                        
+                        <div class="mb-4 text-center">
+                            <label class="form-label d-block text-start fw-semibold mb-3">Chọn số sao:</label>
+                            <div class="star-rating fs-2">
+                                <input type="radio" name="SoSao" value="5" id="star5" checked><label for="star5" class="bi bi-star-fill"></label>
+                                <input type="radio" name="SoSao" value="4" id="star4"><label for="star4" class="bi bi-star-fill"></label>
+                                <input type="radio" name="SoSao" value="3" id="star3"><label for="star3" class="bi bi-star-fill"></label>
+                                <input type="radio" name="SoSao" value="2" id="star2"><label for="star2" class="bi bi-star-fill"></label>
+                                <input type="radio" name="SoSao" value="1" id="star1"><label for="star1" class="bi bi-star-fill"></label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nhận xét của bạn:</label>
+                            <textarea class="form-control" name="NoiDung" rows="4" placeholder="Chia sẻ cảm nhận của bạn về sản phẩm này..." required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-warning rounded-pill px-4 fw-bold">Gửi đánh giá</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <%- include('footer') %>
+
+    <!-- Javascript Section -->
+    <%- include('javascript') %>
+
+    <script>
+        function openReviewModal(maDonHang, maDienThoai, tenDT) {
+            document.getElementById('modalMaDonHang').value = maDonHang;
+            document.getElementById('modalMaDienThoai').value = maDienThoai;
+            document.getElementById('modalTenDT').innerText = tenDT;
+            
+            var myModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+            myModal.show();
+        }
+    </script>
+
+    <style>
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+        }
+        .star-rating input {
+            display: none;
+        }
+        .star-rating label {
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+            margin: 0 5px;
+        }
+        .star-rating input:checked ~ label {
+            color: #ffc107;
+        }
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #ffdb70;
+        }
+    </style>
+</body>
+</html>

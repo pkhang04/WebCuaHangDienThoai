@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/profile.css">
+</head>
+<body class="bg-light">
+
+    <!-- Navbar Section -->
+    <%- include('navbar') %>
+
+    <div class="container main-content mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Notification -->
+                <%- message %>
+
+                <div class="card card-profile">
+                    <div class="profile-header"></div>
+                    <div class="profile-avatar-container">
+                        <img src="/images/icons/<%= taikhoan.HinhAnh || 'user.jpg' %>" 
+                             class="rounded-circle profile-avatar bg-white" alt="Avatar">
+                    </div>
+                    
+                    <div class="card-body p-4 p-md-4">
+                        <div class="text-center mb-4">
+                            <h4 class="fw-bold mb-1"><%= taikhoan.HoVaTen %></h4>
+                            <p class="text-muted small"><i class="bi bi-person-badge me-1"></i><%= taikhoan.QuyenHan === 'quantrivien' ? 'Quản trị viên' : (taikhoan.QuyenHan === 'nhanvien' ? 'Nhân viên' : 'Khách hàng') %></p>
+                        </div>
+
+                        <form action="/taikhoan/profile" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="HoVaTen" class="form-label fw-semibold small">Họ và tên</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-person"></i></span>
+                                        <input type="text" class="form-control border-start-0 ps-0" id="HoVaTen" name="HoVaTen" value="<%= taikhoan.HoVaTen %>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="Email" class="form-label fw-semibold small">Email</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" class="form-control border-start-0 ps-0" id="Email" name="Email" value="<%= taikhoan.Email %>">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Tên đăng nhập</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-shield-lock"></i></span>
+                                        <input type="text" class="form-control bg-light border-start-0 ps-0" value="<%= taikhoan.TenDangNhap %>" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="HinhAnh" class="form-label fw-semibold small">Thay đổi ảnh đại diện</label>
+                                    <input type="file" class="form-control form-control-sm" id="HinhAnh" name="HinhAnh" accept="image/*">
+                                </div>
+
+                                <div class="col-12 mt-4">
+                                    <h6 class="fw-bold border-bottom pb-2 mb-3"><i class="bi bi-key me-2"></i>Thay đổi mật khẩu</h6>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="MatKhau" class="form-label fw-semibold small">Mật khẩu mới</label>
+                                    <input type="password" class="form-control form-control-sm" id="MatKhau" name="MatKhau">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="XacNhanMatKhau" class="form-label fw-semibold small">Xác nhận mật khẩu mới</label>
+                                    <input type="password" class="form-control form-control-sm" id="XacNhanMatKhau" name="XacNhanMatKhau">
+                                </div>
+
+                                <div class="col-12 mt-4 text-center">
+                                    <div class="d-flex justify-content-center gap-3">
+                                        <button type="submit" class="btn btn-primary px-4 py-2 fw-bold rounded-pill btn-sm">Lưu Thay Đổi</button>
+                                        <a href="/" class="btn btn-outline-secondary px-4 py-2 fw-bold rounded-pill btn-sm">Quay Lại</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <%- include('footer') %>
+
+    <!-- Javascript Section -->
+    <%- include('javascript') %>
+    <script>
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+</body>
+</html>

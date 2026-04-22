@@ -1,0 +1,104 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center fw-bold" href="/">
+      <i class="bi bi-phone-vibrate me-2"></i>
+      <span>MobiStore</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Main Navigation Links -->
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="/">
+            <i class="bi bi-house-door me-1"></i> Trang chủ
+          </a>
+        </li>
+        <% if(session.MaNguoiDung && (session.QuyenHan === 'quantrivien' || session.QuyenHan === 'nhanvien')) { %>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-gear me-1"></i> Quản lý
+          </a>
+          <ul class="dropdown-menu shadow">
+            <% if (session.QuyenHan === 'quantrivien') { %>
+            <li>
+              <a class="dropdown-item" href="/danhmuc">
+                <i class="bi bi-grid-3x3-gap me-2"></i> Danh mục điện thoại
+              </a>
+            </li>
+            <% } %>
+            <li>
+              <a class="dropdown-item" href="/dienthoai">
+                <i class="bi bi-phone me-2"></i> Điện thoại
+              </a>
+            </li>
+            <% if (session.QuyenHan === 'quantrivien') { %>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <a class="dropdown-item" href="/taikhoan">
+                <i class="bi bi-people me-2"></i> Tài khoản
+              </a>
+            </li>
+            <% } %>
+            <li>
+              <a class="dropdown-item" href="/donhang">
+                <i class="bi bi-box-seam me-2"></i> Đơn hàng
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/danhgia">
+                <i class="bi bi-chat-left-text me-2"></i> Đánh giá & Bình luận
+              </a>
+            </li>
+          </ul>
+        </li>
+        <% } %>
+      </ul>
+
+
+      <!-- Search Bar -->
+      <form class="d-flex mx-lg-4 my-2 my-lg-0" role="search" action="/timkiem" method="GET">
+        <div class="input-group">
+          <input class="form-control" type="text" name="q" placeholder="Tìm kiếm điện thoại..." aria-label="Search" required>
+          <button class="btn btn-outline-light" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- Right Aligned Items: Cart and Account -->
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item d-flex align-items-center me-3 mt-2 mt-lg-0">
+          <a class="nav-link d-flex align-items-center gap-1" href="/giohang">
+            <i class="bi bi-cart3 fs-5" style="margin-bottom: 2px;"></i>
+            <span class="badge rounded-pill bg-danger"><%= giohang.reduce((sum, item) => sum + item.SoLuongMua, 0) || 0 %></span>
+            <span class="visually-hidden">sản phẩm trong giỏ hàng</span>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <i class="bi bi-person-circle fs-5 me-2"></i> 
+            <%= session.MaNguoiDung ? session.HoVaTen : 'Tài khoản' %>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow">
+            <% if(!session.MaNguoiDung) { %>
+              <li><a class="dropdown-item" href="/dangnhap"><i class="bi bi-person-check me-2"></i>Đăng nhập</a></li>
+              <li><a class="dropdown-item" href="/dangky"><i class="bi bi-person-plus me-2"></i>Đăng ký</a></li>
+            <% } else { %>
+              <li><a class="dropdown-item" href="/taikhoan/profile"><i class="bi bi-person-badge me-2"></i>Thông tin cá nhân</a></li>
+              <li><a class="dropdown-item" href="/donhang/cuatoi"><i class="bi bi-bag-check me-2"></i>Đơn hàng của tôi</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="/dangxuat"><i class="bi bi-person-x me-2"></i>Đăng xuất</a></li>
+            <% } %>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-light">
+    <%- include('navbar') %>
+
+    <div class="container mt-3">
+        <%- message %>
+    </div>
+
+    <div class="container main-content mt-4 mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0 border-start border-4 border-primary ps-3">Quản lý đánh giá</h2>
+        </div>
+
+        <div class="card border-0 shadow-sm root-card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Khách hàng</th>
+                                <th>Số sao</th>
+                                <th>Nội dung</th>
+                                <th>Trạng thái</th>
+                                <th class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% danhgias.forEach(dg => { %>
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold"><%= dg.DienThoai ? dg.DienThoai.TenDT : 'N/A' %></div>
+                                        <small class="text-muted"><%= dg.NgayDanhGia.toLocaleDateString('vi-VN', {hour: '2-digit', minute:'2-digit'}) %></small>
+                                    </td>
+                                    <td><%= dg.NguoiDung ? dg.NguoiDung.HoVaTen : 'Ẩn danh' %></td>
+                                    <td class="text-warning">
+                                        <% for(let i=1; i<=5; i++) { %>
+                                            <i class="bi bi-star<%= i <= dg.SoSao ? '-fill' : '' %>"></i>
+                                        <% } %>
+                                    </td>
+                                    <td style="max-width: 300px;">
+                                        <div class="text-truncate mb-2" title="<%= dg.NoiDung %>"><%= dg.NoiDung %></div>
+                                        <% if(dg.PhanHoi && dg.PhanHoi.length > 0) { %>
+                                            <div class="mt-2 border-top pt-2">
+                                                <% dg.PhanHoi.forEach(ph => { %>
+                                                    <div class="small text-primary mb-1">
+                                                        <i class="bi bi-reply me-1"></i><%= ph.NoiDung %>
+                                                        <span class="text-muted" style="font-size: 0.7rem;">(<%= ph.NgayPhanHoi.toLocaleDateString('vi-VN', {hour: '2-digit', minute:'2-digit'}) %>)</span>
+                                                    </div>
+                                                <% }) %>
+                                            </div>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if(dg.HienThi) { %>
+                                            <span class="badge bg-success">Đang hiển thị</span>
+                                        <% } else { %>
+                                            <span class="badge bg-secondary">Đã ẩn</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary me-1" onclick="openReplyModal('<%= dg._id %>', '<%= dg.NoiDung %>')" title="Phản hồi"><i class="bi bi-chat-dots"></i></button>
+                                        <a href="/danhgia/anthien/<%= dg._id %>" class="btn btn-sm btn-outline-warning me-1" title="<%= dg.HienThi ? 'Ẩn' : 'Hiện' %>">
+                                            <i class="bi bi-eye<%= dg.HienThi ? '-slash' : '' %>"></i>
+                                        </a>
+                                        <% if(session.QuyenHan === 'quantrivien') { %>
+                                            <a href="/danhgia/xoa/<%= dg._id %>" class="btn btn-sm btn-outline-danger" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa đánh giá này?')"><i class="bi bi-trash"></i></a>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reply Modal -->
+    <div class="modal fade" id="replyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="replyForm" action="" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Phản hồi đánh giá</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Nội dung khách hàng:</label>
+                            <p id="customerComment" class="p-2 bg-light rounded italic"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nội dung phản hồi:</label>
+                            <textarea class="form-control" name="PhanHoi" rows="4" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Gửi phản hồi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('footer') %>
+    <%- include('javascript') %>
+
+    <script>
+        function openReplyModal(id, comment) {
+            document.getElementById('replyForm').action = '/danhgia/phanhoi/' + id;
+            document.getElementById('customerComment').innerText = comment;
+            new bootstrap.Modal(document.getElementById('replyModal')).show();
+        }
+    </script>
+</body>
+</html>

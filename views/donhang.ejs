@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+</head>
+<body class="bg-light">
+
+    <!-- Navbar Section -->
+    <%- include('navbar') %>
+
+    <!-- Notification -->
+    <div class="container mt-3">
+        <%- message %>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container main-content mt-4 mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0 border-start border-4 border-primary ps-3">Quản lý đơn hàng</h2>
+        </div>
+
+        <div class="card border-0 shadow-sm root-card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="donhangTable" class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Mã đơn</th>
+                                <th scope="col">Ngày đặt</th>
+                                <th scope="col">Khách hàng</th>
+                                <th scope="col">Tổng tiền</th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col" class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% donhangs.forEach(dh => { %>
+                                <tr>
+                                    <td class="fw-bold text-secondary">#<%= dh._id.toString().substring(18).toUpperCase() %></td>
+                                    <td><%= dh.NgayDat.toLocaleDateString('vi-VN', {hour: '2-digit', minute:'2-digit'}) %></td>
+                                    <td>
+                                        <div><%= dh.TenNguoiNhan %></div>
+                                        <small class="text-muted"><%= dh.DienThoai %></small>
+                                    </td>
+                                    <td class="fw-semibold text-danger"><%= dh.TongTien.toLocaleString('vi-VN') %>₫</td>
+                                    <td>
+                                        <% if (dh.TrangThai === 'Chờ xác nhận') { %>
+                                            <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                        <% } else if (dh.TrangThai === 'Đã xác nhận') { %>
+                                            <span class="badge bg-info text-dark">Đã xác nhận</span>
+                                        <% } else if (dh.TrangThai === 'Đang giao') { %>
+                                            <span class="badge bg-primary">Đang giao</span>
+                                        <% } else if (dh.TrangThai === 'Đã giao') { %>
+                                            <span class="badge bg-success">Đã giao</span>
+                                        <% } else { %>
+                                            <span class="badge bg-danger">Đã hủy</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="/donhang/chitiet/<%= dh._id %>" class="btn btn-sm btn-outline-info me-1" title="Chi tiết/Xử lý"><i class="bi bi-eye"></i></a>
+                                        <% if (session.QuyenHan === 'quantrivien') { %>
+                                            <a href="/donhang/xoa/<%= dh._id %>" class="btn btn-sm btn-outline-danger" title="Xóa" onclick="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn xóa đơn hàng này ra khỏi hệ thống vĩnh viễn không?');">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <%- include('footer') %>
+
+    <!-- Javascript Section -->
+    <%- include('javascript') %>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#donhangTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json"
+                },
+                "order": [[ 1, "desc" ]] // Sắp xếp theo ngày đặt mới nhất
+            });
+        });
+    </script>
+</body>
+</html>

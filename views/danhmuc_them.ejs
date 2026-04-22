@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <!-- Navbar Section -->
+    <%- include('navbar') %>
+
+        <div class="container main-content mt-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="/danhmuc">Quản lý danh mục</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Thêm mới</li>
+                </ol>
+            </nav>
+
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold text-dark">
+                                <i class="bi bi-plus-circle me-2 text-primary"></i>Thêm danh mục mới
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form action="/danhmuc/them" method="POST">
+                                <div class="mb-4">
+                                    <label for="TenDanhMuc" class="form-label fw-semibold">Tên danh mục điện
+                                        thoại</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-tag text-muted"></i>
+                                        </span>
+                                        <input type="text" class="form-control border-start-0 ps-0" id="TenDanhMuc"
+                                            name="TenDanhMuc" placeholder="Nhập tên danh mục (VD: Apple, Samsung...)"
+                                            required autofocus>
+                                    </div>
+                                    <div class="form-text mt-2 italic text-muted small">
+                                        * Lưu ý: Tên danh mục không được trùng lặp.
+                                    </div>
+                                </div>
+
+                                <hr class="my-4 opacity-50">
+
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="/danhmuc" class="btn btn-light px-4 rounded-pill">
+                                        Hủy bỏ
+                                    </a>
+                                    <button type="submit" class="btn btn-primary px-4 rounded-pill shadow-sm">
+                                        <i class="bi bi-check-lg me-2"></i>Lưu danh mục
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <%- include('footer') %>
+
+            <!-- Javascript Section -->
+            <%- include('javascript') %>
+
+</body>
+
+</html>
